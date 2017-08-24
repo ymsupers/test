@@ -1,0 +1,79 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>卡片翻转</title>
+<style type="text/css">
+	.card-map {
+		border: 3px solid #eee;
+		width:50%;
+		margin: 0 auto;
+		display:flex;
+		/*设置流动布局排列方向*/
+		flex-direction: row;
+	}
+	.card-map .card-item {
+		flex-grow: 1;
+		padding:5px;
+	}
+	.card-map .card-item a {
+		width: 100%;
+		height: 350px;
+		background: blue;
+		display: inline-block;
+		transition: all .5s;
+	}
+	
+	.card-map .active a {
+		-moz-transform:scaleX(-1);
+		-webkit-transform:scaleX(-1);
+		-o-transform:scaleX(-1);
+		transform:scaleX(-1);
+		IE
+		filter:FlipH;
+		background: green;
+	}
+</style>
+</head>
+
+<body>
+
+<div class="card-map">
+	<div class="card-item">
+    	<a href="#">卡片01</a>
+    </div>	
+    <div class="card-item">
+    	<a href="#">卡片02</a>
+    </div>
+    <div class="card-item">
+    	<a href="#">卡片03</a>
+    </div>
+    <div class="card-item">
+    	<a href="#">卡片04</a>
+    </div>
+</div>
+
+<script type="text/javascript">
+	var oCardMap = document.querySelector('.card-map');
+	var oCardItem = oCardMap.querySelectorAll('.card-item'); // 返回 NodeList对象
+	
+	var Filp = function () {
+		// Filp code ...
+		var has_class = this.hasClass('active');
+		has_class ? this.classList.remove('active') : this.classList.add('active');
+	}
+	
+	for (var i = 0; i < oCardItem.length; i++) {
+		// 设置当前键值
+		oCardItem[i].index = i;
+		oCardItem[i].hasClass = function (className) {
+			var getClassAttributes = this.getAttribute('class');
+			return getClassAttributes.indexOf(className) != -1;
+		}
+		oCardItem[i].addEventListener('mouseover', Filp);
+		oCardItem[i].addEventListener('mouseout', Filp);
+	}
+</script>
+
+</body>
+</html>
