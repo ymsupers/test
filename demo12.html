@@ -1,0 +1,87 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>跟随鼠标移动</title>
+<style type="text/css">
+	html {
+		overflow: hidden;
+	}
+	.particle {
+		width: 25px;
+		height: 25px;
+		background: red;
+		display: inline-block;
+		position:absolute;
+		left: 0;
+		top:0;
+		border-radius: 25px;
+	}
+</style>
+</head>
+
+<body>
+<script type="text/javascript">
+	
+	(function () {
+		// 保存鼠标经过 x/y轴
+		var position = []; 
+		
+		var group = 0;
+		
+		var NodeList = [];
+	
+		// 生成粒子
+		var generationParticle = function (x, y, sum) {
+			console.log('x:%sy%ss:%s',x, y, sum);
+			if (group) {
+				return;
+			}
+			for (var i = 0; i < sum; i++) {
+				var oDiv = document.createElement('div');
+				oDiv.classList.add('particle');
+				document.body.appendChild(oDiv);
+				NodeList.push(oDiv);
+			}
+			group = 1;
+		}
+		
+		// 粒子动画
+		var particleAnimate = function () {
+			var pos = position.pop();
+			var index = 0;
+			var Move = function () {
+				if (index >= NodeList.length) {
+					index = 0;
+					return false;
+				}
+				NodeList[index].style.left = pos.x - (25/2) + 'px';
+				NodeList[index].style.top = pos.y - (25/2) + 'px';
+				index++;
+				setTimeout(Move, (25 * index));	
+			}
+			Move();
+		}
+		
+		var Particle = function (options) {
+			this.opt = options;	
+		}
+		
+		Particle.prototype.__init = function () {
+			document.addEventListener('mousemove', function (e) {
+				 generationParticle(e.clientX, e.clientY, this.opt.sum);
+				 position.unshift({'x': e.clientX, 'y': e.clientY});
+				 particleAnimate(); // 执行动画
+			}.bind(this));
+		}
+		
+		new Particle({
+			sum: 10, // 粒子数量
+		}).__init();
+	
+	}());
+	
+</script>
+
+</body>
+</html>
