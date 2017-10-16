@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<style type="text/css">
+		* {margin: 0; padding: 0;}
+		body {}
+		table { border-collapse: collapse; border-spacing: 0;}
+		.container {width: 980px; margin: 50px auto;}
+		.btn {padding: 0 15px; height: 35px; border: none; background: #0f88eb; color:#fff; border-radius: 3px; margin-bottom: 15px;
+			outline: none; cursor: pointer;}
+		table th, table td {height: 32px;}
+		table td button { padding: 5px; margin: 0 0 0 10px; background: none; border: none; border-radius: 3px; outline: none; }
+		table td button.edit {background: green; color: #fff;}
+		table td button.delete {background: red; color: #fff;}
+		table td button.save {background: green; color: #fff;}
+		table td button.cancel{border: 1px solid #ddd;}
+	</style>
+</head>
+<body>
+	<div class="container">
+		<button type="button" class="btn add-btn">新增一列</button>
+		<table width="980" border="1">
+			<thead>
+				<th>id</th>
+				<th>name</th>
+				<th>age</th>
+				<th>sex</th>
+				<th>operation</th>
+			</thead>
+			<tbody>
+				<!-- 这里填写内容 -->
+			</tbody>
+		</table>
+	</div>
+
+	<script type="text/javascript">
+		// 定义一个数组， 用于存放数据
+		var _data = [{
+				id: 1,
+				name: 'Job',
+				age: 18,
+				sex: 'Man'
+			},{
+				id: 2,
+				name: 'Jonh',
+				age: 20,
+				sex: 'Man'
+			},{
+				id: 3,
+				name: 'Bob',
+				age: 21,
+				sex: 'Man'
+			}
+		];
+
+		
+
+		var oContainer = document.querySelector('.container');
+		var oAddBtn = oContainer.querySelector('.add-btn');
+		var oTable = oContainer.getElementsByTagName('table')[0];
+		
+		for (var i = 0; i < 3000; i++) {
+			_data.push(_data[Math.ceil(Math.random() * (_data.length - 1))]);
+		}
+
+		// 定义 render 方法， 该方法主要用于数据的渲染
+		var render = function render() {
+			oTable.getElementsByTagName('tbody')[0].innerHTML = '';
+			// 创建文档片段
+			var fragmentElement = document.createDocumentFragment();
+			_data.map((item, index) => {
+				var oTr = document.createElement('tr');
+				// 加一个自定义属性，记录当前的key
+				oTr.index = index;
+				for (var name in item) {
+					var oTd = document.createElement('td');
+					oTd.innerText = item[name];
+					oTr.appendChild(oTd);
+				}
+				// 创建编辑按钮
+				var oEditBtn = document.createElement('button');
+				oEditBtn.type = 'button';
+				oEditBtn.innerText = 'Edit';
+				oEditBtn.addEventListener('click', edit);
+				oEditBtn.className = 'edit';
+				// 创建删除按钮
+				var oDeleteBtn = document.createElement('button');
+				oDeleteBtn.type = 'button';
+				oDeleteBtn.innerText = 'Delete';
+				oDeleteBtn.addEventListener('click', _delete);
+				oDeleteBtn.className = 'delete';
+				// 创建每行的最后一列
+				var oLastTd = document.createElement('td');
+				oLastTd.appendChild(oEditBtn);
+				oLastTd.appendChild(oDeleteBtn);
+				oTr.appendChild(oLastTd);
+				fragmentElement.appendChild(oTr);
+			});
+			oTable.getElementsByTagName('tbody')[0].innerHTML = null;
+			oTable.getElementsByTagName('tbody')[0].appendChild(fragmentElement);
+		}
+
+		// 定义 edit 方法，该方法主要用于数据编辑
+		var edit = function edit() {
+			// 获取 tr
+			var oRow = this.parentNode.parentNode;
+			// 获取当前的数据
+			var data = _data[oRow.index];
+			var fragmentElement = document.createDocumentFragment();
+			for (var name in data) {
+				var oTd = document.createElement('td');
+				switch (name) {
+					case 'id': 
+						oTd.innerText = data[name]; 
+						break;
+					default: 
+						var oInput = document.createElement('input');
+						oInput.type = 'text';
+						oInput.value = data[name];
+						oInput.name = name;
+						oTd.appendChild(oInput);
+				}
+				fragmentElement.appendChild(oTd);
+			}
+			// 创建最后一列
+			var oLastTd = document.createElement('td');
+
+			// 创建保存按钮
+			var oSaveBtn = document.createElement('button');
+			oSaveBtn.type = 'button';
+			oSaveBtn.innerText = 'Save';
+			oSaveBtn.className = 'save';
+			oSaveBtn.addEventListener('click', save);
+
+			// 创建取消按钮
+			var oCancelBtn = document.createElement('button');
+			oCancelBtn.type = 'button';
+			oCancelBtn.innerText = 'Cancel';
+			oCancelBtn.className = 'cancel';
+			oCancelBtn.addEventListener('click', cancel);
+
+			oLastTd.appendChild(oSaveBtn);
+			oLastTd.appendChild(oCancelBtn);
+			fragmentElement.appendChild(oLastTd);
+			oRow.innerHTML = '';
+			oRow.appendChild(fragmentElement);
+		}
+
+		// 定义 delete 方法， 该方法主要用于删除数据
+		var _delete = function _delete() {
+			var oRow = this.parentNode.parentNode;
+			_data.splice(oRow.index, 1);
+			render();
+		}
+
+		// 定义 add 方法， 该方法主要用于新增数据
+		var add = function () {
+			_data.push({});
+			var oTr = document.createElement('tr');
+			oTr.index = _data.length - 1;
+			_data[oTr.index].id = _data.length;
+			console.log(_data);
+			var oTd$1 = document.createElement('td');
+			var oTd$2 = document.createElement('td');
+			var oTd$3 = document.createElement('td');
+
+			var oInput$1 = document.createElement('input');
+			var oInput$2 = document.createElement('input');
+			var oInput$3 = document.createElement('input');
+
+			oInput$1.type = 'text';
+			oInput$2.type = 'text';
+			oInput$3.type = 'text';
+
+			oInput$1.name = 'name';
+			oInput$2.name = 'age'
+			oInput$3.name = 'sex';
+
+			oTd$1.appendChild(oInput$1);
+			oTd$2.appendChild(oInput$2);
+			oTd$3.appendChild(oInput$3);
+
+
+			var oFristTd = document.createElement('td');
+			oFristTd.innerText = _data.length;
+
+			var oLastTd = document.createElement('td');
+
+			var oSaveBtn = document.createElement('button');
+			var oDeleteBtn = document.createElement('button');
+
+			oSaveBtn.type = 'button';
+			oSaveBtn.innerText = 'Save';
+			oSaveBtn.className = 'save';
+			oSaveBtn.addEventListener('click', save);
+			oLastTd.appendChild(oSaveBtn);
+
+			oDeleteBtn.type = 'button';
+			oDeleteBtn.innerText = 'Cancel';
+			oDeleteBtn.className = 'cancel';
+			oDeleteBtn.addEventListener('click', _delete);
+			oLastTd.appendChild(oDeleteBtn);
+
+			oTr.appendChild(oFristTd);
+			oTr.appendChild(oTd$1);
+			oTr.appendChild(oTd$2);
+			oTr.appendChild(oTd$3);
+			oTr.appendChild(oLastTd);
+
+			oTable.getElementsByTagName('tbody')[0].appendChild(oTr);
+		}
+
+		//定义保存方法
+		var save = function save() {
+			var oRow = this.parentNode.parentNode;
+			var data = _data[oRow.index] || -1;
+			var fragmentElement = document.createDocumentFragment();
+			if (data) {
+				data = new Proxy(_data[oRow.index], {
+					set: function (target, key, value, receiver) {
+						target[key] = value;
+					}
+				});
+				var oInput = document.getElementsByTagName('input');
+				for (var i = 0, len = oInput.length; i < len; i++) {
+					var name = oInput[i].name;
+					var value = oInput[i].value;
+					data[name] = value;
+				}
+
+				for (var name in data) {
+					var oTd = document.createElement('td');
+					oTd.innerText = data[name];
+					fragmentElement.appendChild(oTd);
+				}
+
+			} else {
+
+			}
+
+			var oLastTd = document.createElement('td');
+			var oEditBtn = document.createElement('button');
+			var oDeleteBtn = document.createElement('button');
+
+			oEditBtn.type = 'button';
+			oEditBtn.innerText = 'Edit';
+			oEditBtn.className = 'edit';
+			oEditBtn.addEventListener('click', edit);
+			oLastTd.appendChild(oEditBtn);
+
+			oDeleteBtn.type = 'button';
+			oDeleteBtn.innerText = 'Delete';
+			oDeleteBtn.className = 'delete';
+			oDeleteBtn.addEventListener('click', _delete);
+			oLastTd.appendChild(oDeleteBtn);
+
+			fragmentElement.appendChild(oLastTd);
+			oRow.innerHTML = null;
+			oRow.appendChild(fragmentElement);
+		}
+
+		// 定义编辑取消方法
+		var cancel = function cancel() {
+			// 获取 Row
+			var oRow = this.parentNode.parentNode;
+			var data = _data[oRow.index];
+			var fragmentElement = document.createDocumentFragment();
+
+			for (var name in data) {
+				var oTd = document.createElement('td');
+				oTd.innerText = data[name];
+				fragmentElement.appendChild(oTd);
+			}
+
+			var oLastTd = document.createElement('td');
+			// 创建编辑按钮
+			var oEditBtn = document.createElement('button');
+			var oDeleteBtn = document.createElement('button');
+
+			oEditBtn.type='button';
+			oEditBtn.innerText = 'Edit';
+			oEditBtn.className = 'edit';
+			oEditBtn.addEventListener('click', edit);
+
+			oDeleteBtn.type = 'butotn';
+			oDeleteBtn.innerText = 'Delete';
+			oDeleteBtn.className = 'delete';
+			oDeleteBtn.addEventListener('click', _delete);
+
+			oLastTd.appendChild(oEditBtn);
+			oLastTd.appendChild(oDeleteBtn);
+			fragmentElement.appendChild(oLastTd);
+
+			oRow.innerHTML = null;
+			oRow.appendChild(fragmentElement);
+		}
+
+		oAddBtn.addEventListener('click', add);
+		console.time('testForEach');
+		render();
+		console.timeEnd('testForEach');
+	</script>
+</body>
+</html>
